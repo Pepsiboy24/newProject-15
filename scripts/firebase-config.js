@@ -1,0 +1,16 @@
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDUMMY_API_KEY", // Replace with your actual API key
+  authDomain: "your-project.firebaseapp.com", // Replace with your actual auth domain
+  databaseURL: "https://your-project-default-rtdb.firebaseio.com", // Replace with your actual database URL
+  projectId: "your-project", // Replace with your actual project ID
+  storageBucket: "your-project.appspot.com", // Replace with your actual storage bucket
+  messagingSenderId: "123456789", // Replace with your actual messaging sender ID
+  appId: "1:123456789:web:abcdef" // Replace with your actual app ID
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Get a reference to the database
+const database = firebase.database();
