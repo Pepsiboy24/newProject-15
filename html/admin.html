@@ -117,11 +117,11 @@
                 <!-- <div class="form-group">
                     <label for="event-date">Event Date</label>
                     <input type="date" id="event-date" name="event-date" required>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="event-description">Event Description</label>
                     <textarea id="event-description" name="event-description" rows="4" required></textarea>
-                </div> -->
+                </div>
                 <div class="form-group">
                     <label for="event-image">Event Image URL</label>
                     <!-- <input type="url" > -->
@@ -131,35 +131,12 @@
             </form>
         </div>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
-    <script src="../scripts/firebase-config.js"></script>
-    <script src="../scripts/sidebar.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-storage-compat.js"></script>
+    <!-- <script src="../scripts/firebase-config.js" type="module"></script> -->
+    <!-- <script src="../scripts/sidebar.js" defer></script> -->
+    <script src="../scripts/add_new_event.js" type="module"></script>
     <script src="../scripts/font-awesome.js" defer></script>
-    <script>
-        document.getElementById('event-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const eventData = {
-                name: document.getElementById('event-name').value,
-                date: document.getElementById('event-date').value,
-                location: document.getElementById('event-location').value,
-                description: document.getElementById('event-description').value,
-                image: document.getElementById('event-image').value
-            };
-            // Assuming Firebase is configured, add to database
-            const newEventRef = database.ref('events').push();
-            newEventRef.set(eventData)
-                .then(() => {
-                    console.log('Event added:', eventData);
-                    alert('Event added successfully!');
-                    // Reset form
-                    this.reset();
-                })
-                .catch((error) => {
-                    console.error('Error adding event:', error);
-                    alert('Error adding event. Please try again.');
-                });
-        });
-    </script>
 </body>
 </html>
