@@ -64,6 +64,52 @@
         .submit-btn:hover {
             background-color: #e54a00;
         }
+        .events-display-section {
+            padding: 2vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 100px);
+        }
+        .events-container {
+            background: #16232A;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            color: #ECEDF0;
+        }
+        .events-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+        #events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .event-item {
+            background: #1c2136;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .event-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .event-details h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+        .event-details p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -129,6 +175,12 @@
                 </div>
                 <button type="submit" class="submit-btn">Add Event</button>
             </form>
+        </div>
+    </div>
+    <div class="events-display-section">
+        <div class="events-container">
+            <h2>Existing Events</h2>
+            <div id="events-list"></div>
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app-compat.js"></script>

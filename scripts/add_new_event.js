@@ -23,11 +23,14 @@ const supabaseUrl = 'https://txcfsqsbfjtvmzjlbbun.supabase.co'
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y2ZzcXNiZmp0dm16amxiYnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjE2NzUsImV4cCI6MjA3OTE5NzY3NX0.8uilbKWY0p5MrKzvm0RgX0Qw0u_3SmLAYyFUcXlky0s'
 const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+// Import displayEvents from display_events.js
+// import { displayEvents } from './display_events.js';
+
 // const database = firebase.database();
 // Function to upload image to Supabase Storage
 async function uploadImage(file) {
-    const bucketName = 'events'; // Assuming bucket name is 'event-images'
-    const filePath = `event-images/${file.name}`;
+    const bucketName = 'events';
+    const filePath = `${file.name}`;
     const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file);
     if (error) {
         throw error;
