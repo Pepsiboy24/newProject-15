@@ -36,6 +36,9 @@ async function uploadImage(file) {
         throw error;
     }
     const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+    console.log(filePath)
+    console.log(file)
+    console.log(publicUrlData.publicUrl)
     return publicUrlData.publicUrl;
 }
 
@@ -78,7 +81,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(() => {
                     console.log('Event added successfully!');
-                    alert('Event added successfully!');
+                    window.location.href = 'https://www.google.com';
+                    // alert('Event added successfully!');
                     // Reset form
                     form.reset();
                 })

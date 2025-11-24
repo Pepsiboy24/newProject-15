@@ -10,7 +10,7 @@ const firebaseConfig = {
   measurementId: "G-R9QEJ8KGTJ",
   databaseURL: "https://events-581de-default-rtdb.europe-west1.firebasedatabase.app"
 };
-
+const template = document.querySelector("[data-template]")
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
@@ -27,16 +27,25 @@ const database = firebase.database();
         if (events) {
             Object.keys(events).forEach(key => {
                 const event = events[key];
-                const eventItem = document.createElement('div');
-                eventItem.className = 'event-item';
-                eventItem.innerHTML = `
-                    <img src="${event.image}" alt="${event.name}">
-                    <div class="event-details">
-                        <h3>${event.name}</h3>
-                        <p><strong>Location:</strong> ${event.location}</p>
-                        <p><strong>Description:</strong> ${event.description}</p>
-                    </div>
-                `;
+                const eventItem = template.content.cloneNode(true).children[0]
+                const eventName = eventItem.querySelector("[data-event_name]")
+                const eventDesc = eventItem.querySelector("[data-event_desc]")
+                const eventImg = eventItem.querySelector("[data-img]")
+                eventName.textContent = event.name
+                eventDesc.textContent = event.description
+                eventImg.src = event.image
+
+
+                // const eventItem = document.createElement('div');
+                // eventItem.className = 'event-item';
+                // eventItem.innerHTML = `
+                //     <img src="${event.image}" alt="${event.name}">
+                //     <div class="event-details">
+                //         <h3>${event.name}</h3>
+                //         <p><strong>Location:</strong> ${event.location}</p>
+                //         <p><strong>Description:</strong> ${event.description}</p>
+                //     </div>
+                // `;
                 eventsList.appendChild(eventItem);
             });
         } else {
