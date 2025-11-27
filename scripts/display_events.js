@@ -31,8 +31,10 @@ const database = firebase.database();
                 const eventName = eventItem.querySelector("[data-event_name]")
                 const eventDesc = eventItem.querySelector("[data-event_desc]")
                 const eventImg = eventItem.querySelector("[data-img]")
+                const linkBtn = eventItem.querySelector("[data-link]")
                 eventName.textContent = event.name
                 eventDesc.textContent = event.description
+                linkBtn.href = event.location
                 eventImg.src = event.image
 
 

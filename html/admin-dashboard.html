@@ -97,9 +97,9 @@
             <a href="../index.html">
                 <img src="../Assets/lynq logo.png" alt="logo" />
             </a>
-            <!-- <div class="icon" data-menuOpen style="cursor: pointer;">
+            <div class="icon" data-menuOpen style="cursor: pointer;">
                 <i class="fa fa-bars"></i>
-            </div> -->
+            </div>
             <ul data-menu>
                 <header>
                     <div class="stuff">
@@ -123,7 +123,7 @@
         <div class="metrics">
             <div class="metric-card">
                 <h3 id="upcoming-events">0</h3>
-                <p>Upcoming Events</p>
+                <p>Total Events</p>
             </div>
             <div class="metric-card acard">
                 <a href="./admin.html" class="add-event-btn"><i class="fa fa-plus" style="margin-right: 10px;"></i> Add New Event</a>
@@ -136,45 +136,9 @@
     </div>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
-    <script src="../scripts/firebase-config.js"></script>
+    <!-- <script src="../scripts/firebase-config.js" type="module"></script> -->
     <script src="../scripts/sidebar.js" defer></script>
     <script src="../scripts/font-awesome.js" defer></script>
-    <script>
-        // Fetch and display events
-        const eventsRef = database.ref('events');
-        const eventsList = document.getElementById('events-list');
-        const upcomingEventsEl = document.getElementById('upcoming-events');
-
-        eventsRef.on('value', (snapshot) => {
-            const events = snapshot.val();
-            eventsList.innerHTML = '';
-            let upcomingEvents = 0;
-            const now = new Date();
-
-            if (events) {
-                Object.keys(events).forEach(key => {
-                    const event = events[key];
-                    const eventDate = new Date(event.date);
-                    if (eventDate > now) {
-                        upcomingEvents++;
-                    }
-                    const eventItem = document.createElement('div');
-                    eventItem.className = 'event-item';
-                    eventItem.innerHTML = `
-                        <h4>${event.name}</h4>
-                        <p><strong>Date:</strong> ${event.date}</p>
-                        <p><strong>Location:</strong> ${event.location}</p>
-                        <p><strong>Description:</strong> ${event.description}</p>
-                        <p><strong>Image:</strong> <a href="${event.image}" target="_blank">View Image</a></p>
-                    `;
-                    eventsList.appendChild(eventItem);
-                });
-            } else {
-                eventsList.innerHTML = '<p class="no-events">No events posted yet.</p>';
-            }
-
-            upcomingEventsEl.textContent = upcomingEvents;
-        });
-    </script>
+    <script src="../scripts/dashboard.js" type="module"></script>
 </body>
 </html>
