@@ -15,15 +15,19 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app)
 
 
-const eventsRef = database.ref('events');
+const eventsRef = ref(database, 'events');
 const eventsList = document.getElementById('events-list');
 const upcomingEventsEl = document.getElementById('upcoming-events');
 
-eventsRef.on('value', (snapshot) => {
+// 2. Use the standalone onValue() function to listen for changes
+onValue(eventsRef, (snapshot) => {
     const events = snapshot.val();
     eventsList.innerHTML = '';
     let upcomingEvents = 0;
     const now = new Date();
+    // const total_events = document.getElementById("");
+    upcomingEventsEl.textContent = Object.keys(events).length;
+    console.log(Object.keys(events).length)
 
     if (events) {
         Object.keys(events).forEach(key => {
@@ -35,17 +39,16 @@ eventsRef.on('value', (snapshot) => {
             const eventItem = document.createElement('div');
             eventItem.className = 'event-item';
             eventItem.innerHTML = `
-                <h4>${event.name}</h4>
-                <p><strong>Date:</strong> ${event.date}</p>
-                <p><strong>Location:</strong> ${event.location}</p>
+                <h4>Name:${event.name}</h4>
                 <p><strong>Description:</strong> ${event.description}</p>
-                <p><strong>Image:</strong> <a href="${event.image}" target="_blank">View Image</a></p>
-            `;
+                <p><strong>Link:</strong> ${event.location}</p>
+                `;
+                // <p><strong>Image:</strong> <a href="${event.image}" target="_blank">View Image</a></p>
             eventsList.appendChild(eventItem);
         });
     } else {
         eventsList.innerHTML = '<p class="no-events">No events posted yet.</p>';
     }
 
-    upcomingEventsEl.textContent = upcomingEvents;
-});
+    // upcomingEventsEl.textContent = upcomingEvents;
+})

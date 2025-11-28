@@ -1,0 +1,2 @@
+- [x] Modify displayEvents function to accept searchTerm parameter and filter events by name (case-insensitive)
+- [x] Add event listener to search input to trigger filtering on input change

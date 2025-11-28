@@ -118,9 +118,9 @@
             <a href="../index.html">
                 <img src="../Assets/lynq logo.png" alt="logo" />
             </a>
-            <!-- <div class="icon" data-menuOpen style="cursor: pointer;">
+            <div class="icon" data-menuOpen style="cursor: pointer;">
                 <i class="fa fa-bars"></i>
-            </div> -->
+            </div>
             <ul data-menu>
                 <header>
                     <div class="stuff">
@@ -133,8 +133,8 @@
                 </header>
                 <div class="menuItems">
                     <li><a href="../index.html">Home</a></li>
-                    <li><a href="./sign-in.html">Register An Event</a></li>
-                    <li data-protected-item><a href="./eventOrganizers.html">Your Events</a></li>
+                    <li><a href="#">Register An Event</a></li>
+                    <li data-protected-item><a href="./admin-dashboard.html">Dashboard</a></li>
                 </div>
             </ul>
         </div>
@@ -158,7 +158,7 @@
                 </div>
                 <div class="form-group">
                     <label for="event-location">Link (URL)</label>
-                    <input type="text" id="event-location" name="event-location" required>
+                    <input type="url" id="event-location" name="event-location" required>
                 </div>
                 <!-- <div class="form-group">
                     <label for="event-date">Event Date</label>
@@ -187,7 +187,7 @@
     <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-storage-compat.js"></script>
     <!-- <script src="../scripts/firebase-config.js" type="module"></script> -->
-    <!-- <script src="../scripts/sidebar.js" defer></script> -->
+    <script src="../scripts/sidebar.js" defer></script>
     <script src="../scripts/add_new_event.js" type="module"></script>
     <script src="../scripts/font-awesome.js" defer></script>
 </body>

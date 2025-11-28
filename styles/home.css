@@ -19,6 +19,7 @@ nav .top-nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin-bottom: 20px;
 }
 .top-nav img[alt="logo"] {
 	width: 100px;
@@ -220,6 +221,7 @@ nav .top-nav {
 @media screen and (max-width: 450px) {
 	.search-box #search-event {
 		width: 300px;
+		/* margin-top: 20px  */
 	}
 	.search-box button {
 		width: 2rem;

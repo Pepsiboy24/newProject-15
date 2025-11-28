@@ -16,7 +16,7 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 // Function to display events
- function displayEvents() {
+function displayEvents(searchTerm = '') {
     const eventsList = document.getElementById('events-list');
     if (!eventsList) return;
 
@@ -25,39 +25,43 @@ const database = firebase.database();
         eventsList.innerHTML = '';
         const events = snapshot.val();
         if (events) {
-            Object.keys(events).forEach(key => {
+            const filteredEvents = Object.keys(events).filter(key => {
                 const event = events[key];
-                const eventItem = template.content.cloneNode(true).children[0]
-                const eventName = eventItem.querySelector("[data-event_name]")
-                const eventDesc = eventItem.querySelector("[data-event_desc]")
-                const eventImg = eventItem.querySelector("[data-img]")
-                const linkBtn = eventItem.querySelector("[data-link]")
-                eventName.textContent = event.name
-                eventDesc.textContent = event.description
-                linkBtn.href = event.location
-                eventImg.src = event.image
-
-
-                // const eventItem = document.createElement('div');
-                // eventItem.className = 'event-item';
-                // eventItem.innerHTML = `
-                //     <img src="${event.image}" alt="${event.name}">
-                //     <div class="event-details">
-                //         <h3>${event.name}</h3>
-                //         <p><strong>Location:</strong> ${event.location}</p>
-                //         <p><strong>Description:</strong> ${event.description}</p>
-                //     </div>
-                // `;
-                eventsList.appendChild(eventItem);
+                return event.name.toLowerCase().includes(searchTerm.toLowerCase());
             });
+            if (filteredEvents.length > 0) {
+                filteredEvents.forEach(key => {
+                    const event = events[key];
+                    const eventItem = template.content.cloneNode(true).children[0]
+                    const eventName = eventItem.querySelector("[data-event_name]")
+                    const eventDesc = eventItem.querySelector("[data-event_desc]")
+                    const eventImg = eventItem.querySelector("[data-img]")
+                    const linkBtn = eventItem.querySelector("[data-link]")
+                    eventName.textContent = event.name
+                    eventDesc.textContent = event.description
+                    linkBtn.href = event.location
+                    eventImg.src = event.image
+                    eventsList.appendChild(eventItem);
+                });
+            } else {
+                eventsList.innerHTML = '<p>No events found matching your search.</p>';
+            }
         } else {
             eventsList.innerHTML = '<p>No events found.</p>';
         }
     });
 }
 
-displayEvents()
-// Display existing events on page load
+// Add event listener to search input
 document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-event');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            console.log("click")
+            const searchTerm = searchInput.value;
+            displayEvents(searchTerm);
+        });
+    }
+    // Display all events on page load
     displayEvents();
 });

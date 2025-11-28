@@ -1,0 +1,167 @@
+// --- CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyCap2oaoa7E4mugwjpwsmTnWZfMTggvAxE",
+    authDomain: "events-581de.firebaseapp.com",
+    projectId: "events-581de",
+    storageBucket: "events-581de.firebasestorage.app",
+    messagingSenderId: "595844837268",
+    appId: "1:595844837268:web:fad8d9fbcb17b16d996981",
+    measurementId: "G-R9QEJ8KGTJ",
+    databaseURL: "https://events-581de-default-rtdb.europe-west1.firebasedatabase.app"
+};
+
+// Initialize Firebase (Compat)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const database = firebase.database();
+
+// Initialize Supabase
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const supabaseUrl = 'https://txcfsqsbfjtvmzjlbbun.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4Y2ZzcXNiZmp0dm16amxiYnVuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjE2NzUsImV4cCI6MjA3OTE5NzY3NX0.8uilbKWY0p5MrKzvm0RgX0Qw0u_3SmLAYyFUcXlky0s'
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+
+// --- HELPER 1: Get Image URL from Link (Scraping) ---
+async function getLinkPreviewData(targetUrl) {
+    // SWITCHED TO CORSPROXY.IO (More reliable/direct than allorigins)
+    // Note: corsproxy.io returns the raw HTML string, not JSON
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    
+    try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) throw new Error(`Proxy error: ${response.status}`);
+        
+        const htmlText = await response.text(); // Get raw HTML directly
+
+        // Parse HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, "text/html");
+
+        // Extract OG Image
+        const image = doc.querySelector('meta[property="og:image"]')?.content || 
+                      doc.querySelector('meta[name="twitter:image"]')?.content;
+        
+        // Extract Title
+        const title = doc.querySelector('meta[property="og:title"]')?.content || doc.title;
+
+        if (!image) throw new Error("No preview image found on this link.");
+
+        return { image, title };
+    } catch (err) {
+        console.error("Scraping failed:", err);
+        throw new Error("Could not scrape link. The website might be blocking proxies.");
+    }
+}
+
+
+// --- HELPER 2: Download Image & Upload to Supabase ---
+async function processAndUploadImage(imageUrl) {
+    try {
+        // 1. Fetch the image data as a Blob
+        let blob;
+        try {
+            const response = await fetch(imageUrl);
+            blob = await response.blob();
+        } catch (e) {
+            console.warn("Direct image fetch failed (CORS). Trying proxy...");
+            // Use corsproxy.io for image fetch as well
+            const proxyImgUrl = `https://corsproxy.io/?${encodeURIComponent(imageUrl)}`;
+            const proxyRes = await fetch(proxyImgUrl);
+            if (!proxyRes.ok) throw new Error("Proxy failed to fetch image");
+            blob = await proxyRes.blob();
+        }
+
+        // 2. Generate a unique filename
+        const timestamp = Date.now();
+        const fileName = `scraped_event_${timestamp}.jpg`;
+        const bucketName = 'events';
+
+        // 3. Upload to Supabase
+        const { data, error } = await supabase.storage
+            .from(bucketName)
+            .upload(fileName, blob, {
+                contentType: 'image/jpeg'
+            });
+
+        if (error) throw error;
+
+        // 4. Get Public URL
+        const { data: publicUrlData } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(fileName);
+
+        return publicUrlData.publicUrl;
+
+    } catch (error) {
+        console.error("Error processing image:", error);
+        throw new Error("Failed to upload image to storage.");
+    }
+}
+
+
+// --- MAIN LOGIC ---
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('event-form');
+    
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Get Form Values
+            // Note: Make sure your HTML has an input with id="event-link" instead of "event-image"
+            const eventLink = document.getElementById('event-link').value;
+            const eventName = document.getElementById('event-name').value;
+            const eventLocation = document.getElementById('event-location').value;
+            const eventDescription = document.getElementById('event-description').value;
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerText;
+
+            if (!eventLink) {
+                alert('Please enter a valid link.');
+                return;
+            }
+
+            try {
+                // UI Feedback
+                submitBtn.innerText = "Scraping Link...";
+                submitBtn.disabled = true;
+
+                // Step 1: Scrape the link to get the image URL
+                const previewData = await getLinkPreviewData(eventLink);
+                console.log("Scraped Preview:", previewData);
+
+                // UI Feedback
+                submitBtn.innerText = "Uploading Image...";
+
+                // Step 2: Download that image and upload to YOUR Supabase
+                const supabaseImageUrl = await processAndUploadImage(previewData.image);
+                console.log("Uploaded to Supabase:", supabaseImageUrl);
+
+                // Step 3: Save metadata to Firebase
+                const eventData = {
+                    name: eventName || previewData.title, // Use scraped title if name is empty
+                    location: eventLocation,
+                    description: eventDescription,
+                    image: supabaseImageUrl, // This is your new Supabase URL
+                    originalLink: eventLink
+                };
+
+                await database.ref('events').push(eventData);
+
+                // Success
+                console.log('Event added successfully!');
+                window.location.href = './admin-dashboard.html'; 
+                // form.reset();
+
+            } catch (error) {
+                console.error('Error flow:', error);
+                alert(`Error: ${error.message}`);
+                submitBtn.innerText = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+});

@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .then(() => {
                     console.log('Event added successfully!');
-                    window.location.href = 'https://www.google.com';
+                    window.location.href = './admin-dashboard.html';
                     // alert('Event added successfully!');
                     // Reset form
                     form.reset();
