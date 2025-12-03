@@ -1,58 +1,47 @@
-// 1. Import the functions you need from the SDKs
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// 1. Import Supabase
+// import { createClient } from '@supabase/supabase-js'
 
-// 2. Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCap2oaoa7E4mugwjpwsmTnWZfMTggvAxE",
-  authDomain: "events-581de.firebaseapp.com",
-  projectId: "events-581de",
-  storageBucket: "events-581de.firebasestorage.app",
-  messagingSenderId: "595844837268",
-  appId: "1:595844837268:web:fad8d9fbcb17b16d996981",
-  measurementId: "G-R9QEJ8KGTJ",
-  databaseURL: "https://events-581de-default-rtdb.europe-west1.firebasedatabase.app"
-};
+// 2. Supabase configuration
+const supabaseUrl = 'https://agasljfosvxjdoigzkhp.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnYXNsamZvc3Z4amRvaWd6a2hwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ0MjEzMjYsImV4cCI6MjA3OTk5NzMyNn0.n0pW2fhB09GVsZhup1y_4kaU1WlZ0vkPYe1QSwCpkh0'
 
-// 3. Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
+// 3. Initialize Supabase
+const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey)
 // 4. Handle the Login
 const loginForm = document.getElementById('login-form');
 const submitBtn = document.getElementById('submit-btn')
 const errorDisplay = document.getElementById('error-message');
 
-submitBtn.addEventListener('click', (e) => {
+submitBtn.addEventListener('click', async (e) => {
     console.log("click")
-    // e.preventDefault(); // Stop page from reloading
+    e.preventDefault(); // Stop page from reloading
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            // Signed in successfully
-            const user = userCredential.user;
-            console.log("Logged in as:", user.email);
-            
-            // Redirect to your dashboard
-            window.location.href = "./admin-dashboard.html";
-        })
-        .catch((error) => {
-            // Handle Errors
-            console.error(error.code, error.message);
-            errorDisplay.innerText = "Error: " + error.message;
-        });
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+    })
+
+    if (error) {
+        console.error(error.message);
+        errorDisplay.innerText = "Error: " + error.message;
+    } else {
+        // Signed in successfully
+        console.log("Logged in as:", data.user.email);
+        
+        // Redirect to your dashboard
+        window.location.href = "./admin-dashboard.html";
+    }
 });
 
 // 5. (Optional but recommended) Check if user is already logged in
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // User is signed in, maybe redirect them straight to dashboard?
-    console.log("User is already active:", user.uid);
-  } else {
-    // User is signed out
-    console.log("No user signed in");
-  }
+supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        // IF a session exists, don't let them sit on the login page.
+        // Send them to the dashboard immediately.
+        console.log("User already logged in, redirecting...");
+        window.location.replace("./admin-dashboard.html");
+    }
 });
